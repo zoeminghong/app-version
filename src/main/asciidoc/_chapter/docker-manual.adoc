@@ -34,7 +34,7 @@ sh ./docker-run.sh
 执行 `bin/sql` 目录下 SQL 脚本。
 
 
-==== 访问 http://localhost:8088 , 注册/登录
+==== 访问 http://localhost:8086 , 注册/登录
 
 ==== 创建应用
 
