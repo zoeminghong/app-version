@@ -64,6 +64,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - APP_PROFILE=dev
+      # 标识是否在检查更新时只检查相同渠道的新版本
+      - ENV_CHECK_SAME_CHANNEL=true
   web:
     image: nginx:latest
     container_name: app-version-web
