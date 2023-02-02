@@ -2,6 +2,7 @@ package com.tairanchina.csp.avm.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.ecfront.dew.common.$;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.tairanchina.csp.avm.constants.ServiceResultConstants;
 import com.tairanchina.csp.avm.dto.ServiceResult;
 import com.tairanchina.csp.avm.entity.AndroidVersion;
@@ -25,10 +26,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by hzlizx on 2018/6/21 0021
@@ -101,6 +99,14 @@ public class AndroidVersionServiceImpl implements AndroidVersionService {
             logger.debug("找到指定渠道：{}", channelSelected.toString());
         }
 
+        // 获取当前是否配置了要求必须同渠道
+        Map<String, String> envMap = System.getenv();
+        Boolean isCheckSameChannel = !org.h2.util.StringUtils.isNullOrEmpty(envMap.get("ENV_CHECK_SAME_CHANNEL"));
+        if(isCheckSameChannel && channelSelected == null){// 要求是同渠道并且当前渠道没查询到新包
+            logger.debug("本渠道 {} 查询不到新版本或者新版本未上架，当前版本为最新",channel);
+            return ServiceResultConstants.NO_NEW_VERSION;
+        }
+
         //查找官方渠道
         Channel channelOfficial = new Channel();
         channelOfficial.setAppId(appSelected.getId());
@@ -122,6 +128,13 @@ public class AndroidVersionServiceImpl implements AndroidVersionService {
                         logger.debug("结果：{}", $.json.toJsonString(apk));
                         return ServiceResult.ok(apk);
                     }
+                }
+
+                // 要求同渠道，且当前渠道未上架
+                if(isCheckSameChannel){
+                    logger.debug("本渠道 {} 新版本未上架，当前版本为最新",channel);
+                    // return ServiceResultConstants.NO_NEW_VERSION;
+                    continue;
                 }
             }
             if (officialChannel != null) {
