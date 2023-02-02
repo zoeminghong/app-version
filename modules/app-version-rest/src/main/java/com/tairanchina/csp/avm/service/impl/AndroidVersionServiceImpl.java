@@ -133,7 +133,8 @@ public class AndroidVersionServiceImpl implements AndroidVersionService {
                 // 要求同渠道，且当前渠道未上架
                 if(isCheckSameChannel){
                     logger.debug("本渠道 {} 新版本未上架，当前版本为最新",channel);
-                    return ServiceResultConstants.NO_NEW_VERSION;
+                    // return ServiceResultConstants.NO_NEW_VERSION;
+                    continue;
                 }
             }
             if (officialChannel != null) {
